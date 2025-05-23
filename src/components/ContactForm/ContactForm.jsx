@@ -1,8 +1,13 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { object, string } from "yup";
 import style from "./ContactForm.module.css";
+import { useDispatch } from "react-redux";
+import { addContact } from "../../redux/contactsSlice";
+import { nanoid } from "nanoid";
+import { toast } from "react-toastify";
 
-const ContactForm = ({ handleSubmit }) => {
+const ContactForm = () => {
+  const dispatch = useDispatch();
   const initialValues = {
     name: "",
     number: "",
@@ -15,6 +20,13 @@ const ContactForm = ({ handleSubmit }) => {
       .max(9, "Format number must be: '123-45-78'")
       .required("Required"),
   });
+
+  const handleSubmit = ({ name, number }, actions) => {
+    dispatch(addContact({ id: nanoid(), name, number }));
+    toast("Contact saved");
+    actions.reset;
+  };
+
   return (
     <div className={style.container}>
       <Formik

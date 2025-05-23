@@ -1,17 +1,33 @@
+import { useSelector } from "react-redux";
 import Contact from "../Contact/Contact";
 import styless from "./ContactList.module.css";
+import ContactListEmpty from "../ContactListEmpty/ContactListEmpty";
+import SearchResultEmpty from "../SearchResultEmpty/SearchResultEmpty";
 
-const ContactList = ({ contacts, deleteContact }) => {
+const ContactList = () => {
+  const contacts = useSelector((state) => state.contacts.items);
+  const filter = useSelector((state) => state.filters.name);
+  const filteredContacts =
+    filter !== "" && contacts.length > 0
+      ? contacts.filter((contact) =>
+          contact.name.toLowerCase().includes(filter.toLowerCase())
+        )
+      : contacts;
+
   return (
-    <ul className={styless.container}>
-      {contacts.map((contact) => (
-        <Contact
-          key={contact.id}
-          contact={contact}
-          deleteContact={deleteContact}
-        />
-      ))}
-    </ul>
+    <>
+      {filteredContacts.length > 0 ? (
+        <ul className={styless.container}>
+          {filteredContacts.map((contact) => (
+            <Contact key={contact.id} contact={contact} />
+          ))}
+        </ul>
+      ) : filter ? (
+        <SearchResultEmpty />
+      ) : (
+        <ContactListEmpty />
+      )}
+    </>
   );
 };
 
